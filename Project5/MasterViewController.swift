@@ -22,6 +22,9 @@ class MasterViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "promptForAnswer")
+        
         // find path of file
         if let startWordsPath = NSBundle.mainBundle().pathForResource("start", ofType: "txt") {
             // load contents of file into a string
@@ -33,7 +36,7 @@ class MasterViewController: UITableViewController {
         else {
             allWords = ["silkworm"]
         }
-        startGame() 
+        startGame()
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,6 +71,50 @@ class MasterViewController: UITableViewController {
         objects.removeAll(keepCapacity: true)
         // tableView comes from UITableViewController which MasterViewController inherits
         tableView.reloadData()
+    }
+    
+    func promptForAnswer() {
+        let ac = UIAlertController(title: "Enter answer", message: nil, preferredStyle: .Alert)
+        ac.addTextFieldWithConfigurationHandler(nil)
+        
+        let submitAction = UIAlertAction(title: "Submit", style: .Default) {
+            // everything is part of closure adn passed to UIAlertAction
+            [unowned self, ac] (action: UIAlertAction!) in
+            let answer = ac.textFields![0] as UITextField
+            self.submitAnswer(answer.text)
+        }
+        
+        ac.addAction(submitAction)
+        
+        presentViewController(ac, animated: true, completion: nil)
+    }
+    
+    func submitAnswer(answer: String) {
+        let lowerAnswer = answer.lowercaseString
+        
+        if wordIsPossible(lowerAnswer) {
+            if wordIsOriginal(lowerAnswer) {
+                if wordIsReal(lowerAnswer) {
+                    objects.insert(answer, atIndex: 0)
+                    
+                    let indexPath = NSIndexPath(forRow: 0, inSection: 0)
+                    tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                }
+            }
+        }
+        
+    }
+    
+    func wordIsPossible(word: String) -> Bool {
+        return true
+    }
+    
+    func wordIsOriginal(word: String) -> Bool {
+        return true
+    }
+    
+    func wordIsReal(word: String) -> Bool {
+        return true
     }
 
 }
